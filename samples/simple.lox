@@ -1,0 +1,4 @@
+// this is my simple sample
+// it should be parsable after Chapter 4.
+print("foo")
+print("bar")
