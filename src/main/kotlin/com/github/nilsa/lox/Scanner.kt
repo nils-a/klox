@@ -29,8 +29,9 @@ internal class Scanner(private val source: String) {
             '>' -> addToken(if (match('=')) TokenType.GREATER_EQUAL else TokenType.GREATER)
             '/' -> {
                 if (match('/')) {
-                    // A comment goes until the end of the line.
-                    while (peek() != '\n' && !isAtEnd()) advance()
+                    lineComment()
+                } else if (match('*')) {
+                    multilineComment()
                 } else {
                     addToken(TokenType.SLASH)
                 }
@@ -92,6 +93,33 @@ internal class Scanner(private val source: String) {
         // Trim the surrounding quotes.
         val value = source.substring(start + 1, current - 1)
         addToken(TokenType.STRING, value)
+    }
+
+    private fun lineComment() {
+        // A comment goes until the end of the line.
+        while (peek() != '\n' && !isAtEnd()) advance()
+    }
+
+    private fun multilineComment() {
+        while (true) {
+            while (peek() != '*' && !isAtEnd()) {
+                if (peek() == '\n') line++
+                advance()
+            }
+
+            if (isAtEnd()) {
+                Lox.error(line, "Expected end of comment (*/) But found EOF.")
+                return
+            }
+
+            advance()
+            if (peek() == '/') {
+                advance()
+                break
+            }
+
+            // we found a '*' but not '*/' -> need to search on...
+        }
     }
 
     private fun match(expected: Char): Boolean {

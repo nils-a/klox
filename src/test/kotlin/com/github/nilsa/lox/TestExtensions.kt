@@ -10,3 +10,6 @@ fun <T> Iterable<T>.shouldBeEqualTo(that: Iterable<T>) {
 fun <T> Iterable<T>.shouldBeEqualTo(vararg that: T) {
     this.shouldBeEqualTo(that.toList())
 }
+fun <T> T.shouldBe(that: T) {
+    Assertions.assertEquals(that, this)
+}
